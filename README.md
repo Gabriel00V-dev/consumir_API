@@ -204,8 +204,15 @@ a requisição, mas isso sozinho não bastaria — o Postman passaria direto.
 ## 6. Postman
 
 Coleção pronta em
-[`postman/consumir_API.postman_collection.json`](postman/consumir_API.postman_collection.json) —
+[`postman-collection/consumir_API.postman_collection.json`](postman-collection/consumir_API.postman_collection.json) —
 importe no Postman em *Import → File*.
+
+> **Importante:** importe copiando esse arquivo para fora da pasta do projeto
+> (ex.: Área de Trabalho) antes de abrir no Postman. Se o Postman estiver em
+> modo "Local"/Scratch Pad, ele pode "adotar" a pasta de origem como área de
+> armazenamento dele e reescrever o `.json` no formato interno dele (YAML).
+> Isso não afeta o funcionamento da aplicação — só evite editar a coleção
+> diretamente dentro da pasta do repositório.
 
 São 12 requisições, incluindo as três exigidas e **5 casos de erro propositais**:
 
@@ -249,7 +256,7 @@ consumir_API/
 │   └── conexao.php                              credenciais do MySQL (só no servidor)
 ├── sql/
 │   └── schema.sql                               criação do banco e da tabela
-├── postman/
+├── postman-collection/
 │   └── consumir_API.postman_collection.json     coleção exportada
 └── README.md
 ```

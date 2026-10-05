@@ -4,7 +4,9 @@
 .DS_Store
 Thumbs.db
 
-# Pastas internas do modo "Local" do Postman (geradas ao importar/editar a coleção
-# dentro do app). O que vale para a entrega é postman/consumir_API.postman_collection.json
-postman/.postman/
-postman/postman/
+# Se o Postman Desktop (modo "Local"/Scratch Pad) for apontado para dentro do
+# repositório, ele passa a reescrever a pasta sozinho no formato interno dele
+# (YAML). Bloqueado por precaução; o arquivo de entrega é
+# postman-collection/consumir_API.postman_collection.json
+postman/
+!postman-collection/
