@@ -20,7 +20,13 @@ final class ConsultaModel
                             criado_em, atualizado_em';
 
     /**
-     * Lista os registros salvos, com busca opcional por CNPJ / razao social / apelido.
+     * Lista os registros salvos, com busca opcional por NOME ou CNPJ.
+     *
+     * O termo de busca e comparado de duas formas ao mesmo tempo:
+     *   - como texto, contra razao_social e nome_fantasia (busca por nome);
+     *   - so com os digitos, contra a coluna cnpj (busca por CNPJ), o que
+     *     permite digitar o CNPJ com ou sem pontuacao (00.000.000/0001-91
+     *     ou 00000000000191 encontram o mesmo registro).
      *
      * @return array<int,array<string,mixed>>
      */
@@ -30,12 +36,24 @@ final class ConsultaModel
             $sql  = 'SELECT ' . self::CAMPOS . ' FROM consultas ORDER BY atualizado_em DESC';
             $stmt = $this->preparar($sql);
         } else {
-            $sql = 'SELECT ' . self::CAMPOS . ' FROM consultas
-                    WHERE cnpj LIKE ? OR razao_social LIKE ? OR nome_fantasia LIKE ? OR apelido LIKE ?
-                    ORDER BY atualizado_em DESC';
-            $stmt  = $this->preparar($sql);
-            $curinga = '%' . $busca . '%';
-            $stmt->bind_param('ssss', $curinga, $curinga, $curinga, $curinga);
+            $curingaNome  = '%' . $busca . '%';
+            $digitos      = Validador::somenteDigitos($busca);
+
+            if ($digitos === '') {
+                // O usuario digitou so letras: nao faz sentido comparar com o CNPJ.
+                $sql  = 'SELECT ' . self::CAMPOS . ' FROM consultas
+                         WHERE razao_social LIKE ? OR nome_fantasia LIKE ?
+                         ORDER BY atualizado_em DESC';
+                $stmt = $this->preparar($sql);
+                $stmt->bind_param('ss', $curingaNome, $curingaNome);
+            } else {
+                $curingaCnpj = '%' . $digitos . '%';
+                $sql  = 'SELECT ' . self::CAMPOS . ' FROM consultas
+                         WHERE cnpj LIKE ? OR razao_social LIKE ? OR nome_fantasia LIKE ?
+                         ORDER BY atualizado_em DESC';
+                $stmt = $this->preparar($sql);
+                $stmt->bind_param('sss', $curingaCnpj, $curingaNome, $curingaNome);
+            }
         }
 
         $stmt->execute();
