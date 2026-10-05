@@ -1,0 +1,334 @@
+/* Estilo simples: o foco do trabalho e o fluxo dos dados, nao a beleza da tela. */
+
+:root {
+    --azul-escuro: #16305c;
+    --azul: #24518f;
+    --areia: #f4f6fa;
+    --borda: #d7dce6;
+    --texto: #1d2433;
+    --cinza: #6b7488;
+    --verde: #1b7a4b;
+    --verde-fundo: #e8f6ee;
+    --vermelho: #b3261e;
+    --vermelho-fundo: #fdeceb;
+    --amarelo-fundo: #fff6e0;
+    --amarelo: #8a6400;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    padding: 0 0 48px;
+    background: var(--areia);
+    color: var(--texto);
+    font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    line-height: 1.5;
+}
+
+/* ------------------------------------------------------------------ topo */
+
+.topo {
+    background: var(--azul-escuro);
+    color: #fff;
+    padding: 28px 24px 24px;
+}
+
+.topo h1 {
+    margin: 4px 0 10px;
+    font-size: 1.9rem;
+}
+
+.disciplina {
+    margin: 0;
+    font-size: .78rem;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: #f0c25a;
+    font-weight: 700;
+}
+
+.fluxo {
+    margin: 0;
+    font-size: .9rem;
+    color: #c6d2e6;
+}
+
+.fluxo span {
+    color: #f0c25a;
+    font-style: italic;
+    margin: 0 4px;
+}
+
+/* ----------------------------------------------------------------- layout */
+
+main {
+    max-width: 1100px;
+    margin: 24px auto 0;
+    padding: 0 16px;
+    display: grid;
+    gap: 20px;
+}
+
+.cartao {
+    background: #fff;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 20px 22px 24px;
+}
+
+.cartao h2 {
+    margin: 0 0 16px;
+    font-size: 1.15rem;
+    color: var(--azul-escuro);
+}
+
+/* ---------------------------------------------------------------- formulario */
+
+.linha {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+label {
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--cinza);
+}
+
+label small { font-weight: 400; }
+
+input, select {
+    font: inherit;
+    padding: 9px 11px;
+    border: 1px solid var(--borda);
+    border-radius: 6px;
+    background: #fff;
+    color: inherit;
+    width: 100%;
+}
+
+input:focus, select:focus {
+    outline: 2px solid var(--azul);
+    outline-offset: 1px;
+    border-color: var(--azul);
+}
+
+button {
+    font: inherit;
+    font-weight: 600;
+    padding: 9px 18px;
+    border: 1px solid var(--azul);
+    border-radius: 6px;
+    background: var(--azul);
+    color: #fff;
+    cursor: pointer;
+}
+
+button:hover:not(:disabled) { background: var(--azul-escuro); }
+
+button:disabled {
+    opacity: .55;
+    cursor: progress;
+}
+
+button.secundario {
+    background: #fff;
+    color: var(--azul);
+}
+
+button.secundario:hover { background: #eef2f9; }
+
+button.mini {
+    padding: 5px 10px;
+    font-size: .8rem;
+}
+
+button.perigo {
+    background: #fff;
+    border-color: var(--vermelho);
+    color: var(--vermelho);
+}
+
+button.perigo:hover { background: var(--vermelho-fundo); }
+
+/* -------------------------------------------------------------- mensagens */
+
+.aviso {
+    margin-top: 14px;
+    padding: 10px 13px;
+    border-radius: 6px;
+    font-size: .9rem;
+    border: 1px solid;
+}
+
+.aviso--info {
+    background: var(--amarelo-fundo);
+    border-color: #f0d9a0;
+    color: var(--amarelo);
+}
+
+.aviso--sucesso {
+    background: var(--verde-fundo);
+    border-color: #b6e0c8;
+    color: var(--verde);
+}
+
+.aviso--erro {
+    background: var(--vermelho-fundo);
+    border-color: #f2c2bf;
+    color: var(--vermelho);
+}
+
+.oculto { display: none; }
+
+/* -------------------------------------------------------------- resultado */
+
+.resultado {
+    margin-top: 16px;
+    padding: 16px 18px;
+    background: var(--areia);
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+}
+
+.resultado h3 {
+    margin: 0 0 12px;
+    color: var(--azul-escuro);
+    font-size: 1.05rem;
+}
+
+.resultado dl {
+    margin: 0;
+    display: grid;
+    gap: 8px 24px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.resultado dt {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--cinza);
+    font-weight: 700;
+}
+
+.resultado dd { margin: 0; }
+
+/* ----------------------------------------------------------------- tabela */
+
+.cabecalho-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.cabecalho-lista h2 { margin: 0; }
+
+.busca {
+    display: flex;
+    gap: 8px;
+    flex: 1 1 340px;
+}
+
+.busca input { flex: 1; }
+
+.tabela-rolagem {
+    overflow-x: auto;
+    margin-top: 12px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .89rem;
+}
+
+th, td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--borda);
+    text-align: left;
+    vertical-align: top;
+}
+
+thead th {
+    background: var(--azul-escuro);
+    color: #fff;
+    font-size: .76rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+tbody tr:hover { background: #f8fafd; }
+
+td.mono {
+    font-family: Consolas, "Courier New", monospace;
+    white-space: nowrap;
+}
+
+td.vazio {
+    text-align: center;
+    color: var(--cinza);
+    padding: 22px;
+}
+
+.acoes-col { width: 1%; }
+
+td.acoes {
+    display: flex;
+    gap: 6px;
+    white-space: nowrap;
+    border-bottom: none;
+}
+
+/* ------------------------------------------------------------------ modal */
+
+dialog {
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    padding: 22px 24px;
+    width: min(480px, 92vw);
+}
+
+dialog::backdrop { background: rgba(22, 48, 92, .45); }
+
+dialog h2 {
+    margin: 0 0 4px;
+    font-size: 1.1rem;
+    color: var(--azul-escuro);
+}
+
+.modal-empresa {
+    margin: 0 0 16px;
+    font-size: .85rem;
+    color: var(--cinza);
+}
+
+.botoes-modal {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+/* ----------------------------------------------------------------- rodape */
+
+footer {
+    max-width: 1100px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+    font-size: .82rem;
+    color: var(--cinza);
+}
+
+code {
+    font-family: Consolas, "Courier New", monospace;
+    background: #e8ecf4;
+    padding: 1px 5px;
+    border-radius: 4px;
+}

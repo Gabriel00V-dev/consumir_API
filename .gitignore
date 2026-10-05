@@ -1,0 +1,10 @@
+# Arquivos de ambiente/IDE que não fazem parte da entrega
+.vscode/
+*.log
+.DS_Store
+Thumbs.db
+
+# Pastas internas do modo "Local" do Postman (geradas ao importar/editar a coleção
+# dentro do app). O que vale para a entrega é postman/consumir_API.postman_collection.json
+postman/.postman/
+postman/postman/

@@ -1,0 +1,332 @@
+{
+  "info": {
+    "name": "Trabalho 1 - BrasilAPI (CNPJ) - consumir_API",
+    "description": "Coleção do Trabalho 1 de Linguagem de Programação VIII.\n\nAPI pública sorteada: BrasilAPI, recurso CNPJ.\nTabela: consultas.\n\nOrganização:\n1. Direto na API pública (BrasilAPI)\n2. Nosso servidor - consultar e salvar (POST)\n3. Nosso servidor - listar o que foi salvo (GET)\n4. Casos de erro propositais (400, 404, 405)\n5. Alteração e exclusão (PATCH, PUT, DELETE)\n\nVariáveis: {{base}} = http://localhost/consumir_API/api/consultas.php",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base",
+      "value": "http://localhost/consumir_API/api/consultas.php",
+      "type": "string"
+    },
+    {
+      "key": "brasilapi",
+      "value": "https://brasilapi.com.br/api/cnpj/v1",
+      "type": "string"
+    },
+    {
+      "key": "cnpj_valido",
+      "value": "00000000000191",
+      "type": "string"
+    },
+    {
+      "key": "cnpj_inexistente",
+      "value": "99999999999962",
+      "type": "string"
+    },
+    {
+      "key": "cnpj_invalido",
+      "value": "11111111111111",
+      "type": "string"
+    },
+    {
+      "key": "id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. API pública direto - GET BrasilAPI /cnpj/{cnpj}",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Accept", "value": "application/json" }
+        ],
+        "url": {
+          "raw": "{{brasilapi}}/{{cnpj_valido}}",
+          "host": ["{{brasilapi}}"],
+          "path": ["{{cnpj_valido}}"]
+        },
+        "description": "Requisição feita DIRETO na API pública, só para comparar a resposta crua com a que o nosso servidor devolve.\n\nEsperado: 200 OK com o JSON completo da Receita Federal."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200 na API publica', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Veio razao_social', function () {",
+              "    pm.expect(pm.response.json()).to.have.property('razao_social');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Nosso servidor - POST consultar e salvar (201)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"cnpj\": \"{{cnpj_valido}}\",\n    \"apelido\": \"Banco do Brasil\",\n    \"observacao\": \"Registro criado pelo Postman\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base}}",
+          "host": ["{{base}}"]
+        },
+        "description": "CREATE. O servidor valida o CNPJ, chama a BrasilAPI por cURL, grava na tabela `consultas` e devolve JSON.\n\nEsperado: 201 Created na primeira vez.\nSe o CNPJ já estiver salvo, responde 200 OK e atualiza em vez de duplicar (a coluna cnpj é UNIQUE)."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('201 Created ou 200 OK (ja salvo)', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+              "});",
+              "var corpo = pm.response.json();",
+              "if (corpo.dados && corpo.dados.id) {",
+              "    pm.collectionVariables.set('id', corpo.dados.id);",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Nosso servidor - GET listar salvos (200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base}}",
+          "host": ["{{base}}"]
+        },
+        "description": "READ. Lista todos os registros gravados no MySQL, em JSON.\n\nEsperado: 200 OK com { total, dados: [...] }."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('Tem a lista de dados', function () {",
+              "    pm.expect(pm.response.json()).to.have.property('dados');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Nosso servidor - GET um registro por id (200)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base}}?id={{id}}",
+          "host": ["{{base}}"],
+          "query": [{ "key": "id", "value": "{{id}}" }]
+        },
+        "description": "READ de um registro específico.\n\nEsperado: 200 OK, ou 404 se o id não existir."
+      }
+    },
+    {
+      "name": "5. ERRO PROPOSITAL - POST CNPJ inválido (400)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"cnpj\": \"{{cnpj_invalido}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base}}",
+          "host": ["{{base}}"]
+        },
+        "description": "CASO DE ERRO 1. O CNPJ 11.111.111/1111-11 tem 14 dígitos mas os dígitos verificadores não batem.\n\nO servidor barra ANTES de chamar a API pública (não gasta requisição à toa).\n\nEsperado: 400 Bad Request, código cnpj_invalido."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 400', function () { pm.response.to.have.status(400); });",
+              "pm.test('Codigo cnpj_invalido', function () {",
+              "    pm.expect(pm.response.json().erro.codigo).to.eql('cnpj_invalido');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. ERRO PROPOSITAL - POST CNPJ inexistente (404)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"cnpj\": \"{{cnpj_inexistente}}\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base}}",
+          "host": ["{{base}}"]
+        },
+        "description": "CASO DE ERRO 2. O CNPJ 99.999.999/9999-62 tem formato e dígitos verificadores válidos, mas não existe na base da Receita.\n\nA BrasilAPI responde 404 e o nosso servidor repassa o 404 com mensagem amigável. Nada é gravado no banco.\n\nEsperado: 404 Not Found, código cnpj_nao_encontrado."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 404', function () { pm.response.to.have.status(404); });",
+              "pm.test('Codigo cnpj_nao_encontrado', function () {",
+              "    pm.expect(pm.response.json().erro.codigo).to.eql('cnpj_nao_encontrado');",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. ERRO PROPOSITAL - POST sem o campo cnpj (400)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"apelido\": \"faltou o cnpj\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base}}",
+          "host": ["{{base}}"]
+        },
+        "description": "CASO DE ERRO 3. Mostra que a validação está no SERVIDOR: o formulário HTML nem foi usado aqui, e mesmo assim a regra valeu.\n\nEsperado: 400 Bad Request, código cnpj_ausente."
+      }
+    },
+    {
+      "name": "8. ERRO PROPOSITAL - DELETE id inexistente (404)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base}}?id=999999",
+          "host": ["{{base}}"],
+          "query": [{ "key": "id", "value": "999999" }]
+        },
+        "description": "CASO DE ERRO 4.\n\nEsperado: 404 Not Found, código nao_encontrado."
+      }
+    },
+    {
+      "name": "9. UPDATE parcial - PATCH apelido (200)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"apelido\": \"BB - matriz\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base}}?id={{id}}",
+          "host": ["{{base}}"],
+          "query": [{ "key": "id", "value": "{{id}}" }]
+        },
+        "description": "UPDATE parcial. Envia SÓ o campo que mudou; a observação continua intacta.\n\nEsperado: 200 OK."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function () { pm.response.to.have.status(200); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. UPDATE total - PUT apelido e observação (200)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"apelido\": \"Banco do Brasil\",\n    \"observacao\": \"Substituido via PUT\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{base}}?id={{id}}",
+          "host": ["{{base}}"],
+          "query": [{ "key": "id", "value": "{{id}}" }]
+        },
+        "description": "UPDATE total. O PUT substitui os dois campos editáveis: o que não vier no corpo é gravado como nulo.\n\nContraste com a requisição 9 (PATCH).\n\nEsperado: 200 OK."
+      }
+    },
+    {
+      "name": "11. DELETE registro salvo (204)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base}}?id={{id}}",
+          "host": ["{{base}}"],
+          "query": [{ "key": "id", "value": "{{id}}" }]
+        },
+        "description": "DELETE. A exclusão acontece pelo método DELETE, nunca por um link GET: GET é um método seguro, que só deve ler.\n\nEsperado: 204 No Content (sem corpo na resposta)."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 204 No Content', function () { pm.response.to.have.status(204); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. ERRO PROPOSITAL - método não permitido (405)",
+      "request": {
+        "method": "HEAD",
+        "header": [],
+        "url": {
+          "raw": "{{base}}",
+          "host": ["{{base}}"]
+        },
+        "description": "CASO DE ERRO 5. O endpoint aceita GET, POST, PATCH, PUT e DELETE. Qualquer outro método recebe 405 com o cabeçalho Allow.\n\nEsperado: 405 Method Not Allowed."
+      }
+    }
+  ]
+}

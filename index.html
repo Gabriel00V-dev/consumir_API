@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de CNPJ — BrasilAPI</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topo">
+    <p class="disciplina">Linguagem de Programação VIII &bull; Trabalho 1</p>
+    <h1>Consulta de CNPJ</h1>
+    <p class="fluxo">
+        Interface <span>&rarr; fetch()</span> Servidor PHP <span>&rarr; cURL</span> BrasilAPI
+        <span>&rarr; INSERT</span> MySQL
+    </p>
+</header>
+
+<main>
+
+    <!-- ----------------------------------------------------------------
+         CREATE: consulta na BrasilAPI e grava no banco (POST)
+         ---------------------------------------------------------------- -->
+    <section class="cartao">
+        <h2>1. Consultar e salvar</h2>
+
+        <form id="form-consulta" novalidate>
+            <div class="linha">
+                <label for="cnpj">CNPJ</label>
+                <input type="text" id="cnpj" name="cnpj" inputmode="numeric"
+                       placeholder="00.000.000/0000-00" maxlength="18" autocomplete="off" required>
+            </div>
+
+            <div class="linha">
+                <label for="apelido">Apelido <small>(opcional)</small></label>
+                <input type="text" id="apelido" name="apelido" maxlength="100"
+                       placeholder="Como você quer identificar esta empresa">
+            </div>
+
+            <div class="linha">
+                <label for="observacao">Observação <small>(opcional)</small></label>
+                <input type="text" id="observacao" name="observacao" maxlength="255"
+                       placeholder="Anotação livre">
+            </div>
+
+            <button type="submit" id="btn-consultar">Consultar e salvar</button>
+            <!-- CNPJs para teste:
+                 00.000.000/0001-91 → existe (Banco do Brasil) ....... 201 Created
+                 99.999.999/9999-62 → formato válido, não existe ..... 404 Not Found
+                 11.111.111/1111-11 → dígito verificador inválido .... 400 Bad Request -->
+        </form>
+
+        <div id="aviso" class="aviso oculto" role="status" aria-live="polite"></div>
+        <div id="resultado" class="resultado oculto"></div>
+    </section>
+
+    <!-- ----------------------------------------------------------------
+         READ: lista os registros salvos (GET)
+         ---------------------------------------------------------------- -->
+    <section class="cartao">
+        <div class="cabecalho-lista">
+            <h2>2. Registros salvos</h2>
+            <div class="busca">
+                <input type="search" id="busca" placeholder="Filtrar por CNPJ, razão social ou apelido">
+                <button type="button" id="btn-buscar">Filtrar</button>
+                <button type="button" id="btn-recarregar" class="secundario">Recarregar</button>
+            </div>
+        </div>
+
+        <div id="aviso-lista" class="aviso oculto" role="status" aria-live="polite"></div>
+
+        <div class="tabela-rolagem">
+            <table id="tabela">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>CNPJ</th>
+                    <th>Razão social</th>
+                    <th>Município / UF</th>
+                    <th>Situação</th>
+                    <th>Apelido</th>
+                    <th>Observação</th>
+                    <th class="acoes-col">Ações</th>
+                </tr>
+                </thead>
+                <tbody id="corpo-tabela">
+                <tr><td colspan="8" class="vazio">Carregando…</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</main>
+
+<!-- ----------------------------------------------------------------
+     UPDATE: edição em janela modal (PATCH ou PUT)
+     ---------------------------------------------------------------- -->
+<dialog id="modal-edicao">
+    <form id="form-edicao" method="dialog">
+        <h2>Editar registro <span id="modal-id"></span></h2>
+        <p id="modal-empresa" class="modal-empresa"></p>
+
+        <div class="linha">
+            <label for="edit-apelido">Apelido</label>
+            <input type="text" id="edit-apelido" maxlength="100">
+        </div>
+
+        <div class="linha">
+            <label for="edit-observacao">Observação</label>
+            <input type="text" id="edit-observacao" maxlength="255">
+        </div>
+
+        <div class="linha">
+            <label for="edit-metodo">Método HTTP</label>
+            <select id="edit-metodo">
+                <option value="PATCH">PATCH — envia só o que mudou (parcial)</option>
+                <option value="PUT">PUT — substitui os dois campos (o vazio vira nulo)</option>
+            </select>
+        </div>
+
+        <div id="aviso-modal" class="aviso oculto"></div>
+
+        <div class="botoes-modal">
+            <button type="button" id="btn-cancelar" class="secundario">Cancelar</button>
+            <button type="button" id="btn-salvar">Salvar</button>
+        </div>
+    </form>
+</dialog>
+
+<footer>
+    <p>
+        A página nunca fala com o MySQL nem com a BrasilAPI: todo acesso passa por
+        <code>api/consultas.php</code>. Nenhuma credencial do banco existe neste JavaScript.
+    </p>
+</footer>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
