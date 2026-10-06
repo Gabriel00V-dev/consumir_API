@@ -1,5 +1,3 @@
-/* Estilo simples: o foco do trabalho e o fluxo dos dados, nao a beleza da tela. */
-
 :root {
     --azul-escuro: #16305c;
     --azul: #24518f;
@@ -25,8 +23,6 @@ body {
     font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
     line-height: 1.5;
 }
-
-/* ------------------------------------------------------------------ topo */
 
 .topo {
     background: var(--azul-escuro);
@@ -60,8 +56,6 @@ body {
     margin: 0 4px;
 }
 
-/* ----------------------------------------------------------------- layout */
-
 main {
     max-width: 1100px;
     margin: 24px auto 0;
@@ -82,8 +76,6 @@ main {
     font-size: 1.15rem;
     color: var(--azul-escuro);
 }
-
-/* ---------------------------------------------------------------- formulario */
 
 .linha {
     display: grid;
@@ -153,8 +145,6 @@ button.perigo {
 
 button.perigo:hover { background: var(--vermelho-fundo); }
 
-/* -------------------------------------------------------------- mensagens */
-
 .aviso {
     margin-top: 14px;
     padding: 10px 13px;
@@ -182,8 +172,6 @@ button.perigo:hover { background: var(--vermelho-fundo); }
 }
 
 .oculto { display: none; }
-
-/* -------------------------------------------------------------- resultado */
 
 .resultado {
     margin-top: 16px;
@@ -215,8 +203,6 @@ button.perigo:hover { background: var(--vermelho-fundo); }
 }
 
 .resultado dd { margin: 0; }
-
-/* ----------------------------------------------------------------- tabela */
 
 .cabecalho-lista {
     display: flex;
@@ -286,8 +272,6 @@ td.acoes {
     border-bottom: none;
 }
 
-/* ------------------------------------------------------------------ modal */
-
 dialog {
     border: 1px solid var(--borda);
     border-radius: 10px;
@@ -315,8 +299,6 @@ dialog h2 {
     gap: 8px;
     margin-top: 18px;
 }
-
-/* ----------------------------------------------------------------- rodape */
 
 footer {
     max-width: 1100px;

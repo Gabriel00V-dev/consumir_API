@@ -1,13 +1,3 @@
--- =====================================================================
--- Trabalho 1 - Linguagem de Programacao VIII
--- API publica sorteada: BrasilAPI  (recurso escolhido: CNPJ)
--- Banco: consumir_api        Tabela: consultas
---
--- Como executar:
---   phpMyAdmin > aba "Importar" > selecione este arquivo > Executar
---   ou:  C:\xampp\mysql\bin\mysql.exe -u root < sql\schema.sql
--- =====================================================================
-
 CREATE DATABASE IF NOT EXISTS consumir_api
     DEFAULT CHARACTER SET utf8mb4
     DEFAULT COLLATE utf8mb4_unicode_ci;
@@ -19,8 +9,7 @@ DROP TABLE IF EXISTS consultas;
 CREATE TABLE consultas (
     id                 INT UNSIGNED NOT NULL AUTO_INCREMENT,
 
-    -- dados vindos da BrasilAPI (/api/cnpj/v1/{cnpj})
-    cnpj               CHAR(14)      NOT NULL,            -- somente digitos
+    cnpj               CHAR(14)      NOT NULL,
     razao_social       VARCHAR(255)  NOT NULL,
     nome_fantasia      VARCHAR(255)      NULL,
     situacao_cadastral VARCHAR(60)       NULL,
@@ -28,7 +17,6 @@ CREATE TABLE consultas (
     uf                 CHAR(2)           NULL,
     cnae_principal     VARCHAR(255)      NULL,
 
-    -- dados do usuario (editaveis por PATCH / PUT)
     apelido            VARCHAR(100)      NULL,
     observacao         VARCHAR(255)      NULL,
 
@@ -37,7 +25,6 @@ CREATE TABLE consultas (
                                      ON UPDATE CURRENT_TIMESTAMP,
 
     PRIMARY KEY (id),
-    -- evita que o duplo clique no botao "Consultar" crie dois registros iguais
     UNIQUE KEY uq_consultas_cnpj (cnpj),
     KEY idx_consultas_uf (uf)
 ) ENGINE = InnoDB

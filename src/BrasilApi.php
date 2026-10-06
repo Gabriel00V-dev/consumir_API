@@ -1,12 +1,4 @@
 <?php
-/**
- * Cliente da API publica BrasilAPI (recurso CNPJ).
- *
- * Quem chama a API publica e o SERVIDOR, nunca o navegador. Assim a aplicacao
- * controla o tratamento de erro, o timeout e o que sera gravado no banco.
- *
- * Endpoint: GET https://brasilapi.com.br/api/cnpj/v1/{cnpj}
- */
 
 declare(strict_types=1);
 
@@ -15,11 +7,6 @@ final class BrasilApi
     private const BASE_URL = 'https://brasilapi.com.br/api/cnpj/v1/';
     private const TIMEOUT  = 15;
 
-    /**
-     * Consulta um CNPJ (somente digitos).
-     *
-     * @return array{status:int, dados:array<string,mixed>|null, falhaRede:?string}
-     */
     public static function consultarCnpj(string $cnpj): array
     {
         $url = self::BASE_URL . rawurlencode($cnpj);
@@ -37,7 +24,6 @@ final class BrasilApi
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTPHEADER     => [
                 'Accept: application/json',
-                // Boa pratica pedida pelas APIs publicas: identificar o cliente.
                 'User-Agent: Trabalho1-LP8-UNIFEG (consumir_API)',
             ],
         ]);
@@ -61,13 +47,6 @@ final class BrasilApi
         ];
     }
 
-    /**
-     * Converte a resposta da BrasilAPI para as colunas da tabela `consultas`.
-     * Guardamos so o essencial, nao o JSON inteiro.
-     *
-     * @param  array<string,mixed> $dados
-     * @return array<string,string|null>
-     */
     public static function mapearParaTabela(array $dados): array
     {
         $texto = static function (mixed $valor): ?string {

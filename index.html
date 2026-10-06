@@ -19,9 +19,6 @@
 
 <main>
 
-    <!-- ----------------------------------------------------------------
-         CREATE: consulta na BrasilAPI e grava no banco (POST)
-         ---------------------------------------------------------------- -->
     <section class="cartao">
         <h2>1. Consultar e salvar</h2>
 
@@ -45,19 +42,12 @@
             </div>
 
             <button type="submit" id="btn-consultar">Consultar e salvar</button>
-            <!-- CNPJs para teste:
-                 00.000.000/0001-91 → existe (Banco do Brasil) ....... 201 Created
-                 99.999.999/9999-62 → formato válido, não existe ..... 404 Not Found
-                 11.111.111/1111-11 → dígito verificador inválido .... 400 Bad Request -->
         </form>
 
         <div id="aviso" class="aviso oculto" role="status" aria-live="polite"></div>
         <div id="resultado" class="resultado oculto"></div>
     </section>
 
-    <!-- ----------------------------------------------------------------
-         READ: lista os registros salvos (GET)
-         ---------------------------------------------------------------- -->
     <section class="cartao">
         <div class="cabecalho-lista">
             <h2>2. Registros salvos</h2>
@@ -93,9 +83,6 @@
 
 </main>
 
-<!-- ----------------------------------------------------------------
-     UPDATE: edição em janela modal (PATCH ou PUT)
-     ---------------------------------------------------------------- -->
 <dialog id="modal-edicao">
     <form id="form-edicao" method="dialog">
         <h2>Editar registro <span id="modal-id"></span></h2>

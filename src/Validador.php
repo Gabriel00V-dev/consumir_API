@@ -1,25 +1,14 @@
 <?php
-/**
- * Validacao de entrada no SERVIDOR.
- *
- * O front tambem valida (para avisar rapido), mas quem tem a ultima palavra
- * e o servidor: o JavaScript pode ser contornado por Postman, curl ou DevTools.
- */
 
 declare(strict_types=1);
 
 final class Validador
 {
-    /** Remove tudo que nao for digito. */
     public static function somenteDigitos(string $valor): string
     {
         return preg_replace('/\D+/', '', $valor) ?? '';
     }
 
-    /**
-     * Valida o CNPJ: 14 digitos, nao pode ser todos iguais e os dois
-     * digitos verificadores precisam bater (modulo 11).
-     */
     public static function cnpjValido(string $cnpj): bool
     {
         $cnpj = self::somenteDigitos($cnpj);
@@ -53,10 +42,6 @@ final class Validador
         return true;
     }
 
-    /**
-     * Normaliza um texto opcional vindo do cliente.
-     * Devolve null quando o campo veio vazio.
-     */
     public static function textoOpcional(mixed $valor, int $limite): ?string
     {
         if ($valor === null) {
@@ -76,7 +61,6 @@ final class Validador
         return mb_substr($texto, 0, $limite);
     }
 
-    /** Formata 11222333000181 como 11.222.333/0001-81. */
     public static function formatarCnpj(string $cnpj): string
     {
         $cnpj = self::somenteDigitos($cnpj);

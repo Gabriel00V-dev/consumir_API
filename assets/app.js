@@ -1,18 +1,6 @@
-/*
- * Interface do trabalho.
- *
- * Regra da arquitetura: este arquivo SO conversa com o nosso servidor PHP.
- * Ele nunca chama a BrasilAPI e nunca toca no MySQL — por isso aqui nao existe
- * nenhuma credencial de banco nem URL da API publica.
- *
- * Exclusao e alteracao usam DELETE / PATCH / PUT com fetch(), nunca link GET.
- */
-
 'use strict';
 
 const ENDPOINT = 'api/consultas.php';
-
-/* ---------------------------------------------------------------- utilidades */
 
 const $ = (seletor) => document.querySelector(seletor);
 
@@ -36,7 +24,6 @@ function escapar(texto) {
         .replace(/"/g, '&quot;');
 }
 
-/** Formata o CNPJ enquanto o usuario digita. */
 function mascaraCnpj(valor) {
     const d = valor.replace(/\D/g, '').slice(0, 14);
 
@@ -47,10 +34,6 @@ function mascaraCnpj(valor) {
         .replace(/(\d{4})(\d)/, '$1-$2');
 }
 
-/**
- * Validacao de CNPJ no front — so para avisar rapido.
- * A validacao que vale e a do servidor (src/Validador.php).
- */
 function cnpjValido(valor) {
     const cnpj = valor.replace(/\D/g, '');
 
@@ -75,17 +58,12 @@ function cnpjValido(valor) {
     return true;
 }
 
-/**
- * Faz a requisicao e sempre devolve { ok, status, corpo }.
- * Centralizar aqui garante que todo erro vire mensagem amigavel na tela.
- */
 async function requisitar(url, opcoes = {}) {
     let resposta;
 
     try {
         resposta = await fetch(url, opcoes);
     } catch (falha) {
-        // Apache parado, sem rede, URL errada…
         return {
             ok: false,
             status: 0,
@@ -107,13 +85,10 @@ async function requisitar(url, opcoes = {}) {
     return { ok: resposta.ok, status: resposta.status, corpo };
 }
 
-/** Extrai a mensagem de erro padronizada pelo servidor. */
 function mensagemDeErro(resultado) {
     const msg = resultado.corpo && resultado.corpo.erro && resultado.corpo.erro.mensagem;
     return msg ? `${msg} (HTTP ${resultado.status})` : `Falha na requisicao (HTTP ${resultado.status}).`;
 }
-
-/* ----------------------------------------------------- CREATE: POST /consultas */
 
 const formConsulta = $('#form-consulta');
 const campoCnpj = $('#cnpj');
@@ -136,8 +111,6 @@ formConsulta.addEventListener('submit', async (evento) => {
         return;
     }
 
-    // Desabilitar o botao evita o duplo clique criar duas requisicoes.
-    // Mesmo assim o servidor se protege: a coluna cnpj e UNIQUE no banco.
     btnConsultar.disabled = true;
     btnConsultar.textContent = 'Consultando…';
     mostrarAviso(avisoTopo, 'Consultando a BrasilAPI pelo servidor…', 'info');
@@ -185,8 +158,6 @@ function desenharResultado(registro) {
             <div><dt>CNAE principal</dt><dd>${escapar(registro.cnae_principal)}</dd></div>
         </dl>`;
 }
-
-/* ------------------------------------------------------- READ: GET /consultas */
 
 const corpoTabela = $('#corpo-tabela');
 const avisoLista = $('#aviso-lista');
@@ -244,8 +215,6 @@ campoBusca.addEventListener('keydown', (e) => {
         carregarLista();
     }
 });
-
-/* -------------------------------- UPDATE / DELETE: PATCH, PUT e DELETE por id */
 
 const modal = $('#modal-edicao');
 const avisoModal = $('#aviso-modal');
@@ -312,7 +281,6 @@ $('#btn-salvar').addEventListener('click', async () => {
 });
 
 async function excluir(id) {
-    // Pedir confirmacao: a acao e destrutiva e nao tem volta.
     if (!window.confirm(`Excluir o registro #${id}? Essa ação não pode ser desfeita.`)) {
         return;
     }
@@ -327,7 +295,5 @@ async function excluir(id) {
     mostrarAviso(avisoLista, `Registro #${id} excluído (DELETE → HTTP 204 No Content).`, 'sucesso');
     carregarLista();
 }
-
-/* ------------------------------------------------------------------- inicio */
 
 carregarLista();

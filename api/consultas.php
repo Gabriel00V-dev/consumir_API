@@ -1,21 +1,4 @@
 <?php
-/**
- * CONTROLLER - endpoints da aplicacao.
- *
- * Fluxo:  Interface (fetch) -> ESTE ARQUIVO -> BrasilAPI (cURL) -> MySQL
- *
- *  POST   /api/consultas.php           cria   - consulta o CNPJ na BrasilAPI e grava  (201)
- *  GET    /api/consultas.php           lista  - todos os registros salvos             (200)
- *  GET    /api/consultas.php?id=1      le     - um registro                      (200 / 404)
- *  GET    /api/consultas.php?busca=x   lista  - filtrada                              (200)
- *  PATCH  /api/consultas.php?id=1      altera - parcial (apelido e/ou observacao)     (200)
- *  PUT    /api/consultas.php?id=1      altera - substitui os campos editaveis         (200)
- *  DELETE /api/consultas.php?id=1      exclui - remove o registro                     (204)
- *
- * Nenhuma alteracao ou exclusao acontece por GET: GET e um metodo "seguro",
- * ou seja, so le. Alterar por link GET deixaria o sistema aberto a buscadores,
- * pre-carregamento do navegador e requisicoes forjadas por outra pagina.
- */
 
 declare(strict_types=1);
 
@@ -25,7 +8,6 @@ require_once __DIR__ . '/../src/Validador.php';
 require_once __DIR__ . '/../src/BrasilApi.php';
 require_once __DIR__ . '/../src/ConsultaModel.php';
 
-// O erro vai para o log do Apache, nunca para o corpo da resposta JSON.
 ini_set('display_errors', '0');
 error_reporting(E_ALL);
 
@@ -68,7 +50,6 @@ try {
             Resposta::erro(405, "Metodo $metodo nao e aceito neste endpoint.", 'metodo_nao_permitido');
     }
 } catch (Throwable $e) {
-    // Qualquer falha nossa (MySQL parado, SQL errado) e 500 - erro do servidor.
     error_log('[consumir_API] ' . $e->getMessage());
     Resposta::erro(
         500,
@@ -77,11 +58,6 @@ try {
     );
 }
 
-// ---------------------------------------------------------------------------
-// Handlers
-// ---------------------------------------------------------------------------
-
-/** GET - lista tudo, filtra por busca ou devolve um registro. */
 function tratarGet(ConsultaModel $model): void
 {
     if (isset($_GET['id'])) {
@@ -104,15 +80,10 @@ function tratarGet(ConsultaModel $model): void
     ]);
 }
 
-/**
- * POST - o coracao do trabalho:
- * valida -> chama a API publica -> grava no banco -> devolve JSON.
- */
 function tratarPost(ConsultaModel $model): void
 {
     $corpo = Resposta::corpoJson();
 
-    // Aceita tambem formulario tradicional ($_POST), caso o cliente envie assim.
     if ($corpo === [] && $_POST !== []) {
         $corpo = $_POST;
     }
@@ -125,7 +96,6 @@ function tratarPost(ConsultaModel $model): void
 
     $cnpj = Validador::somenteDigitos($cnpjBruto);
 
-    // VALIDACAO NO SERVIDOR: nao adianta so o front validar, o Postman passa direto.
     if (!Validador::cnpjValido($cnpj)) {
         Resposta::erro(
             400,
@@ -137,7 +107,6 @@ function tratarPost(ConsultaModel $model): void
     $apelido    = Validador::textoOpcional($corpo['apelido']    ?? null, 100);
     $observacao = Validador::textoOpcional($corpo['observacao'] ?? null, 255);
 
-    // --- chamada a API publica (feita pelo servidor, nunca pelo navegador) ---
     $resposta = BrasilApi::consultarCnpj($cnpj);
 
     if ($resposta['falhaRede'] !== null) {
@@ -174,12 +143,9 @@ function tratarPost(ConsultaModel $model): void
 
     $dados = BrasilApi::mapearParaTabela($resposta['dados']);
 
-    // --- grava no banco ---
     $existente = $model->buscarPorCnpj($cnpj);
 
     if ($existente !== null) {
-        // CNPJ ja salvo: atualiza em vez de duplicar. A coluna cnpj e UNIQUE
-        // justamente para que um duplo clique nao crie dois registros iguais.
         $model->atualizarDadosDaApi((int) $existente['id'], $dados);
 
         $camposUsuario = [];
@@ -208,7 +174,6 @@ function tratarPost(ConsultaModel $model): void
     ]);
 }
 
-/** PATCH - atualizacao PARCIAL: envia so o que mudou. */
 function tratarPatch(ConsultaModel $model): void
 {
     $id    = lerId($_GET['id'] ?? null);
@@ -244,7 +209,6 @@ function tratarPatch(ConsultaModel $model): void
     ]);
 }
 
-/** PUT - substitui os campos editaveis por inteiro (o que faltar vira NULL). */
 function tratarPut(ConsultaModel $model): void
 {
     $id    = lerId($_GET['id'] ?? null);
@@ -265,7 +229,6 @@ function tratarPut(ConsultaModel $model): void
     ]);
 }
 
-/** DELETE - remove o registro salvo. */
 function tratarDelete(ConsultaModel $model): void
 {
     $id = lerId($_GET['id'] ?? null);
@@ -277,11 +240,6 @@ function tratarDelete(ConsultaModel $model): void
     Resposta::json(204, []);
 }
 
-// ---------------------------------------------------------------------------
-// Apoio
-// ---------------------------------------------------------------------------
-
-/** Converte e valida o id recebido pela query string. */
 function lerId($valor): int
 {
     if (!is_string($valor) || preg_match('/^\d+$/', $valor) !== 1) {
