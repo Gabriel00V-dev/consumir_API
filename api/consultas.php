@@ -58,6 +58,7 @@ try {
     );
 }
 
+// GET
 function tratarGet(ConsultaModel $model): void
 {
     if (isset($_GET['id'])) {
@@ -80,6 +81,7 @@ function tratarGet(ConsultaModel $model): void
     ]);
 }
 
+// POST
 function tratarPost(ConsultaModel $model): void
 {
     $corpo = Resposta::corpoJson();
@@ -174,6 +176,7 @@ function tratarPost(ConsultaModel $model): void
     ]);
 }
 
+// PATCH
 function tratarPatch(ConsultaModel $model): void
 {
     $id    = lerId($_GET['id'] ?? null);
@@ -209,6 +212,7 @@ function tratarPatch(ConsultaModel $model): void
     ]);
 }
 
+// PUT
 function tratarPut(ConsultaModel $model): void
 {
     $id    = lerId($_GET['id'] ?? null);
@@ -229,6 +233,7 @@ function tratarPut(ConsultaModel $model): void
     ]);
 }
 
+// DELETE
 function tratarDelete(ConsultaModel $model): void
 {
     $id = lerId($_GET['id'] ?? null);
